@@ -1,23 +1,36 @@
-# ---- Stage 1: Build ----
-FROM maven:3.9-amazoncorretto-21 AS builder
-
+# -------- Build Stage --------
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copy pom.xml first for dependency caching
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
 
-# Copy source and build the jar
-COPY src ./src
+
+# Copy all project files
+COPY . .
+
+
+
+# Build the project and skip tests for faster build
 RUN mvn clean package -DskipTests
 
-# ---- Stage 2: Run ----
-FROM azul/zulu-openjdk-alpine:25-jre-headless-latest
 
+
+# -------- Run Stage --------
+FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
-COPY --from=builder /app/target/*.jar app.jar
 
-EXPOSE 8081
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Copy the jar built in the previous stage
+COPY --from=build /app/target/*.jar app.jar
+
+
+
+# Expose the default HTTP port
+EXPOSE 8080
+
+
+
+# Run the app with the port Render provides
+CMD ["sh", "-c", "java -Dserver.port=$PORT -jar app.jar"]
+
+
