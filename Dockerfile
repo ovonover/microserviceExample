@@ -1,5 +1,5 @@
 # -------- Build Stage --------
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+FROM maven:3.9-eclipse-temurin-25-alpine AS build
 WORKDIR /app
 
 
@@ -15,7 +15,7 @@ RUN mvn clean package -DskipTests
 
 
 # -------- Run Stage --------
-FROM eclipse-temurin:21-jdk
+FROM azul/zulu-openjdk-alpine:25-jre-headless-latest
 WORKDIR /app
 
 
