@@ -5,7 +5,10 @@ public class User
     private int id;
     private String name;
 
-    public User() {}
+    public User() {
+        this.id = 10;
+        this.name = "Ali Ahmad";
+    }
 
     public int getId() {
         return id;
